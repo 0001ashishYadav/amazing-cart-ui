@@ -9,7 +9,7 @@ function LoginPage() {
         {/* <!-- Left: Image --> */}
         <div className="w-1/2 h-[100%] hidden lg:block">
           <img
-            src="https://placehold.co/800x/667fff/ffffff.png?text=Your+Image&font=Montserrat"
+            src="https://img.freepik.com/free-photo/young-girl-dressed-up-black-t-shirt-leather-trousers-holding-blank-craft-shopping-bags-with-handles-isolated-white_231208-4952.jpg?semt=ais_hybrid&w=740"
             alt="Placeholder Image"
             className="object-cover w-full h-[100%]"
           />
