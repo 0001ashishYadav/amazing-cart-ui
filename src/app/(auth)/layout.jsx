@@ -4,7 +4,7 @@ import React from "react";
 function AuthLayout({ children }) {
   return (
     <>
-      <header className="h-16 bg-gray-900 text-white font-semibold flex justify-between items-center px-5">
+      <header className="h-16 fixed inset-x-0 bg-gray-900 text-white font-semibold flex justify-between items-center px-5">
         This is Auth's Header
         <div className="flex items-center gap-4">
           <Link href="/">Home</Link>
