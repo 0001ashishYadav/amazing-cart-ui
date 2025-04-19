@@ -10,6 +10,11 @@ const Navbar = () => {
         <Link href="/">Home</Link>
         <Link href="/shop">Shop</Link>
       </nav>
+
+      <div className="flex items-center gap-4">
+        <Link href="/login">Login</Link>
+        <Link href="/signup">Sighup</Link>
+      </div>
     </header>
   );
 };
