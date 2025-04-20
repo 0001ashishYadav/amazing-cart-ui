@@ -57,7 +57,7 @@ function LoginPage() {
               </label>
             </div>
             {/* <!-- Forgot Password Link --> */}
-            <div className="mb-6 text-blue-500">
+            <div className="mb-6 text-black">
               <a href="#" className="hover:underline">
                 Forgot Password?
               </a>
@@ -65,13 +65,13 @@ function LoginPage() {
             {/* <!-- Login Button --> */}
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 w-full"
+              className="bg-black hover:bg-gray-800 text-white font-semibold rounded-md py-2 px-4 w-full"
             >
               Login
             </button>
           </form>
           {/* <!-- Sign up  Link --> */}
-          <div className="mt-6 text-blue-500 text-center">
+          <div className="mt-6 text-black text-center">
             <Link href="/signup" className="hover:underline">
               Sign up Here
             </Link>
