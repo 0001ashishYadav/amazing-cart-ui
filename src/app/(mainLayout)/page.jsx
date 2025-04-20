@@ -1,5 +1,6 @@
 "use client";
 
+import HeroSection from "@/component/home/HeroSection";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
@@ -23,15 +24,20 @@ export default function HomePage() {
     })();
   }, []);
   return (
-    <div className="grid md:grid-cols-4 gap-3 p-5">
-      {products.map((product) => (
-        <div key={product.product_code} className="border shadow rounded p-2">
-          <img src={product.thumbnail} />
-          <h4>{product.product_code}</h4>
-          <p>{`Rs ${product.price}`}</p>
-          <h3 className="font-medium">{product.product_name}</h3>
-        </div>
-      ))}
-    </div>
+    <>
+      <section>
+        <HeroSection />
+      </section>
+      <div className="grid md:grid-cols-4 gap-3 p-5">
+        {products.map((product) => (
+          <div key={product.product_code} className="border shadow rounded p-2">
+            <img src={product.thumbnail} />
+            <h4>{product.product_code}</h4>
+            <p>{`Rs ${product.price}`}</p>
+            <h3 className="font-medium">{product.product_name}</h3>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
