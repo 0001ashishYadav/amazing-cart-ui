@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const ProductCard = ({ product }) => {
@@ -8,7 +9,9 @@ const ProductCard = ({ product }) => {
           <img src={product.thumbnail} />
           <h4>{product.product_code}</h4>
           <p>{`Rs ${product.price}`}</p>
-          <h3 className="font-medium">{product.product_name}</h3>
+          <Link href={`/products/${product.slug}`} className="font-medium">
+            {product.product_name}
+          </Link>
         </div>
       ))}
     </div>

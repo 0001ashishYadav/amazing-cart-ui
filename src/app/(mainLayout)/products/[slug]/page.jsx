@@ -1,9 +1,34 @@
 "use client";
 
+import { getProductDetails } from "@/utils/apiClient";
 import { Award, Star } from "lucide-react";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const ProductPage = () => {
+  const [productDetails, setProductDetails] = useState({});
+
+  const { slug } = useParams();
+  const fetchProductDeatils = async (slug) => {
+    try {
+      const res = await getProductDetails(slug);
+      const data = await res.json();
+      console.log(data);
+      if (data.error) {
+        alert(data.message);
+        return;
+      }
+      console.log(data);
+      setProductDetails(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProductDeatils(slug);
+  }, [slug]);
+
   const [bCurrentImg, setBcurrentImg] = useState(
     "https://m.media-amazon.com/images/I/81sNxLVmxOL._SX679_.jpg"
   );
