@@ -1,10 +1,11 @@
 "use client";
 
+import ProductCard from "@/component/card";
 import HeroSection from "@/component/home/HeroSection";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
-  const [products, setProducts] = useState([]);
+  const [product, setProduct] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -17,7 +18,7 @@ export default function HomePage() {
 
         console.log(data);
 
-        setProducts(data);
+        setProduct(data);
       } catch (error) {
         console.log(err);
       }
@@ -28,16 +29,8 @@ export default function HomePage() {
       <section>
         <HeroSection />
       </section>
-      <div className="grid md:grid-cols-4 gap-3 p-5">
-        {products.map((product) => (
-          <div key={product.product_code} className="border shadow rounded p-2">
-            <img src={product.thumbnail} />
-            <h4>{product.product_code}</h4>
-            <p>{`Rs ${product.price}`}</p>
-            <h3 className="font-medium">{product.product_name}</h3>
-          </div>
-        ))}
-      </div>
+
+      <ProductCard product={product} />
     </>
   );
 }
