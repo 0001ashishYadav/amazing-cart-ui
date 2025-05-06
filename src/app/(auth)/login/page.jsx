@@ -1,7 +1,20 @@
+"use client";
+
+import { useGlobalContext } from "@/context/GlobalContext";
+import { setCookie } from "@/utils/cookies";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 function LoginPage() {
+  const [userName, setUserName] = useState();
+  const [password, setPassword] = useState();
+  const setIsLogin = useGlobalContext();
+
+  const login = () => {
+    setCookie("userName", userName);
+    setIsLogin(true);
+  };
+
   return (
     <div className="h-screen flex justify-center items-center pt-16">
       {/* <!-- component --> */}
@@ -27,6 +40,8 @@ function LoginPage() {
                 type="text"
                 id="username"
                 name="username"
+                required
+                onChange={(e) => setUserName(e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                 autocomplete="off"
               />
@@ -40,6 +55,7 @@ function LoginPage() {
                 type="password"
                 id="password"
                 name="password"
+                required
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                 autocomplete="off"
               />
@@ -64,6 +80,7 @@ function LoginPage() {
             </div>
             {/* <!-- Login Button --> */}
             <button
+              onClick={login}
               type="submit"
               className="bg-black hover:bg-gray-800 text-white font-semibold rounded-md py-2 px-4 w-full"
             >
