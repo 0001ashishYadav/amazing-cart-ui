@@ -13,12 +13,12 @@ const ProductPage = () => {
     try {
       const res = await getProductDetails(slug);
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       if (data.error) {
         alert(data.message);
         return;
       }
-      console.log(data);
+      // console.log(data);
       setProductDetails(data);
     } catch (error) {
       console.log(error);
