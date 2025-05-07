@@ -2,10 +2,10 @@
 
 import { createContext, useContext, useState } from "react";
 
-const GlobalContext = createContext();
+const GlobalContext = createContext({});
 
 export const GlobalContextProvider = ({ children }) => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   const value = {
     isLogin,

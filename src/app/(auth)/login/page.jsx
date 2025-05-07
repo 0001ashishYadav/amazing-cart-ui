@@ -8,7 +8,7 @@ import React, { useState } from "react";
 function LoginPage() {
   const [userName, setUserName] = useState();
   const [password, setPassword] = useState();
-  const setIsLogin = useGlobalContext();
+  const { setIsLogin } = useGlobalContext();
 
   const login = () => {
     setCookie("userName", userName);
