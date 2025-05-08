@@ -1,4 +1,5 @@
 "use client";
+import { resetPassword } from "@/utils/apiClient";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
@@ -9,6 +10,23 @@ const ResetPasswordPage = () => {
   const { token } = useParams();
 
   console.log(token);
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await resetPassword({ password }, decodeURIComponent(token));
+      const data = await res.json();
+      console.log(data);
+      if (data.error) {
+        alert(data.message);
+      }
+
+      alert(data.message);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="h-screen flex justify-center items-center pt-16">
@@ -25,7 +43,7 @@ const ResetPasswordPage = () => {
         {/* <!-- Right: Login Form --> */}
         <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
           <h1 className="text-2xl font-semibold mb-4">Reset Password</h1>
-          <form action="#" method="POST">
+          <form action="#" method="POST" onSubmit={handleResetPassword}>
             {/* <!-- Username Input --> */}
             <div className="mb-4">
               <label for="username" className="block text-gray-600">
