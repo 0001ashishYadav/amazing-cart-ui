@@ -1,8 +1,10 @@
 "use client";
 
 import { useGlobalContext } from "@/context/GlobalContext";
-import { login } from "@/utils/apiClient";
+import { apiClient } from "@/utils/apiClient";
 import { setCookie } from "@/utils/cookies";
+import { validateEmail, validatePassword } from "@/utils/validateFormFields";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -10,34 +12,98 @@ import React, { useState } from "react";
 
 function LoginPage() {
   const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPassword, setIsPassword] = useState(true);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setIsLogin } = useGlobalContext();
 
-  // const login = () => {
-  //   setCookie("userName", userName);
-  //   setIsLogin(true);
-  // };
+  const [validationError, setValidationError] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState("");
+
+  const enableDisableBtn = () => {
+    if (!email.length || !password.length) {
+      return true;
+    }
+    return false;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    setIsLoading(true);
+    setError("");
+    setValidationError({ email: "", password: "" });
+    if (!validateEmail(email)) {
+      setValidationError((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setValidationError((prev) => ({
+        ...prev,
+        password:
+          "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character",
+      }));
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const res = await login({ email, password });
-      const data = await res.json();
+      const data = await apiClient.login({ email, password });
+
       console.log(data);
+
       if (data.error) {
         alert(data.message);
+        setError(data.message);
+        setIsLoading(false);
         return;
       }
 
-      setCookie("access_token", data.access_token);
-      setCookie("refresh_token", data.refresh_token);
+      const {
+        access_token,
+        refresh_token,
+        refresh_token_expires_at,
+        access_token_expires_at,
+      } = data;
+
+      const currentMilies = Date.now();
+      const accesTokenExpiresAt = Date.parse(access_token_expires_at);
+      const refreshTokenExpiresAt = Date.parse(refresh_token_expires_at);
+
+      setCookie(
+        "access_token",
+        access_token,
+        parseInt(`${(accesTokenExpiresAt - currentMilies) / 1000}`)
+      );
+      setCookie(
+        "refresh_token",
+        refresh_token,
+        parseInt(`${(refreshTokenExpiresAt - currentMilies) / 1000}`)
+      );
       setIsLogin(true);
       setEmail("");
       setPassword("");
-      router.push("/");
+      setValidationError({ email: "", password: "" });
+      setError("");
+      setIsLoading(false);
+      router.push("/", { replace: true });
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
+      setError("Something went wrong. Please try again later.");
+      setValidationError({ email: "", password: "" });
     }
   };
 
@@ -56,37 +122,57 @@ function LoginPage() {
         {/* <!-- Right: Login Form --> */}
         <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
           <h1 className="text-2xl font-semibold mb-4">Login</h1>
+
+          {error && (
+            <p className="text-sm text-red-500 text-center mt-1">{error}</p>
+          )}
+
           <form action="#" method="POST" onSubmit={handleLogin}>
             {/* <!-- Username Input --> */}
             <div className="mb-4">
-              <label for="username" className="block text-gray-600">
-                Email
-              </label>
+              <label className="block text-gray-600">Email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
+                value={email}
                 required
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-                autocomplete="off"
               />
+
+              {validationError.email && (
+                <p className="text-sm text-red-500">{validationError.email}</p>
+              )}
             </div>
             {/* <!-- Password Input --> */}
-            <div className="mb-4">
-              <label for="password" className="block text-gray-600">
-                Password
-              </label>
+            <label className="block text-gray-600">Password</label>
+            <div className="mb-4 relative">
               <input
-                type="password"
+                type={isPassword ? "password" : "text"}
                 id="password"
+                value={password}
                 name="password"
                 required
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-                autocomplete="off"
               />
+
+              {isPassword ? (
+                <Eye
+                  className="absolute right-2 top-[50%] -translate-y-[50%] hover:cursor-pointer"
+                  onClick={() => setIsPassword(!isPassword)}
+                />
+              ) : (
+                <EyeOff
+                  className="absolute right-2 top-[50%] -translate-y-[50%] hover:cursor-pointer"
+                  onClick={() => setIsPassword(!isPassword)}
+                />
+              )}
             </div>
+            {validationError.password && (
+              <p className="text-sm text-red-500">{validationError.password}</p>
+            )}
             {/* <!-- Remember Me Checkbox --> */}
             <div className="mb-4 flex items-center">
               <input
@@ -95,22 +181,31 @@ function LoginPage() {
                 name="remember"
                 className="text-blue-500"
               />
-              <label for="remember" className="text-gray-600 ml-2">
-                Remember Me
-              </label>
+              <label className="text-gray-600 ml-2">Remember Me</label>
             </div>
             {/* <!-- Forgot Password Link --> */}
             <div className="mb-6 text-black">
-              <a href="#" className="hover:underline">
+              <a href="/forgot_password" className="hover:underline">
                 Forgot Password?
               </a>
             </div>
             {/* <!-- Login Button --> */}
+
             <button
               type="submit"
-              className="bg-black hover:bg-gray-800 text-white font-semibold rounded-md py-2 px-4 w-full"
+              disabled={enableDisableBtn() ? true : false}
+              className={` text-white font-semibold rounded-md py-2 px-4 w-full flex justify-center items-center ${
+                enableDisableBtn() ? "bg-gray-300" : "bg-black"
+              }`}
             >
-              Login
+              {isLoading ? (
+                <svg
+                  className="animate-spin h-8 w-8 border-t-transparent border-2 rounded-full"
+                  viewBox="0 0 24 24"
+                ></svg>
+              ) : (
+                "Login"
+              )}
             </button>
           </form>
           {/* <!-- Sign up  Link --> */}

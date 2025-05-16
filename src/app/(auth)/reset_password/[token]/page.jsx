@@ -1,30 +1,80 @@
 "use client";
-import { resetPassword } from "@/utils/apiClient";
+import { apiClient } from "@/utils/apiClient";
+import { validatePassword } from "@/utils/validateFormFields";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const ResetPasswordPage = () => {
+  const router = useRouter;
+  const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { token } = useParams();
 
+  const [error, setError] = useState("");
+  const [validationError, setValidationError] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+
   console.log(token);
+
+  const enableDisableBtn = () => {
+    if (!password.length || !confirmPassword.length) {
+      return true;
+    }
+    return false;
+  };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setValidationError({ password: "", confirmPassword: "" });
+
+    if (!validatePassword(password)) {
+      setValidationError((prev) => ({
+        ...prev,
+        password:
+          "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character",
+      }));
+      setIsLoading(false);
+      return;
+    }
+    if (!validatePassword(confirmPassword)) {
+      setValidationError((prev) => ({
+        ...prev,
+        confirmPassword:
+          "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character",
+      }));
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      const res = await resetPassword({ password }, decodeURIComponent(token));
-      const data = await res.json();
+      const data = await apiClient.resetPassword(decodeURIComponent(token), {
+        password,
+      });
+
       console.log(data);
       if (data.error) {
-        alert(data.message);
+        setError(data.message);
+        setIsLoading(false);
+        return;
       }
 
       alert(data.message);
+      setPassword("");
+      setConfirmPassword("");
+      setError("");
+      setValidationError({ password: "", confirmPassword: "" });
+      setIsLoading(false);
+      router.push("/login");
     } catch (error) {
       console.log(error);
+      setError("Something Went Wrong");
+      setIsLoading(false);
     }
   };
 
@@ -43,6 +93,11 @@ const ResetPasswordPage = () => {
         {/* <!-- Right: Login Form --> */}
         <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
           <h1 className="text-2xl font-semibold mb-4">Reset Password</h1>
+
+          {error && (
+            <p className="text-sm text-red-500 text-center mt-1">{error}</p>
+          )}
+
           <form action="#" method="POST" onSubmit={handleResetPassword}>
             {/* <!-- Username Input --> */}
             <div className="mb-4">
@@ -60,6 +115,11 @@ const ResetPasswordPage = () => {
                 autocomplete="off"
               />
             </div>
+
+            {validationError.password && (
+              <p className="text-sm text-red-500">{validationError.password}</p>
+            )}
+
             {/* <!-- Password Input --> */}
             <div className="mb-4">
               <label for="password" className="block text-gray-600">
@@ -76,6 +136,13 @@ const ResetPasswordPage = () => {
                 autocomplete="off"
               />
             </div>
+
+            {validationError.confirmPassword && (
+              <p className="text-sm text-red-500">
+                {validationError.confirmPassword}
+              </p>
+            )}
+
             {/* <!-- Remember Me Checkbox --> */}
             <div className="mb-4 flex items-center">
               <input
@@ -97,9 +164,19 @@ const ResetPasswordPage = () => {
             {/* <!-- Login Button --> */}
             <button
               type="submit"
-              className="bg-black hover:bg-gray-800 text-white font-semibold rounded-md py-2 px-4 w-full"
+              disabled={enableDisableBtn() ? true : false}
+              className={` hover:bg-gray-800 text-white font-semibold rounded-md py-2 px-4 w-full flex justify-center items-center ${
+                enableDisableBtn() ? "bg-gray-300" : "bg-black"
+              }`}
             >
-              Save Password
+              {isLoading ? (
+                <svg
+                  className="animate-spin h-8 w-8 border-t-transparent border-2 rounded-full"
+                  viewBox="0 0 24 24"
+                ></svg>
+              ) : (
+                "Save Password"
+              )}
             </button>
           </form>
           {/* <!-- Sign up  Link --> */}
