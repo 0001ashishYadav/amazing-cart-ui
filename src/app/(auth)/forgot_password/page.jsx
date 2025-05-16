@@ -1,5 +1,6 @@
 "use client";
 
+import { apiClient } from "@/utils/apiClient";
 import { validateEmail } from "@/utils/validateFormFields";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
