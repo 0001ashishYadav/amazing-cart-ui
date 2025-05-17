@@ -1,6 +1,6 @@
 "use client";
 
-import { getProductDetails } from "@/utils/apiClient";
+import { apiClient, getProductDetails } from "@/utils/apiClient";
 import { Award, Star } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -11,9 +11,8 @@ const ProductPage = () => {
   const { slug } = useParams();
   const fetchProductDeatils = async (slug) => {
     try {
-      const res = await getProductDetails(slug);
-      const data = await res.json();
-      // console.log(data);
+      const data = await apiClient.getProductBySlug(slug);
+      console.log(data);
       if (data.error) {
         alert(data.message);
         return;
