@@ -50,16 +50,15 @@ apiClient.forgotPassword = (payload) =>
 apiClient.refreshAccessToken = () =>
   apiClient("/users/renew_token", "GET", null, "refresh_token");
 
-// product fetching ....................................
+// User APIs
+apiClient.fetchMyProfile = () => apiClient("/users/profiles/my", "GET");
 
-export const getProductDetails = async (slug) => {
-  return await fetch(`${baseURL}/products/public/s/${slug}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-};
+// Product APIs
+apiClient.getProducts = (filter = "limit=20&page=1") =>
+  apiClient(`/products/public?${filter}`, "GET");
+
+apiClient.getProductBySlug = (slug) =>
+  apiClient(`/products/public/s/${slug}`, "GET");
 
 // Category APIs
 apiClient.fetchCategories = () => apiClient("/categories/list", "GET");
