@@ -79,7 +79,7 @@ const ProductPage = () => {
                 key={ind}
                 className={`md:h-[80px] h-[30px] md:w-[80px] w-[40px] border-2 ${
                   selectedImage === ind
-                    ? " border-red-700"
+                    ? " border-gray-950"
                     : "  border-gray-300"
                 }`}
                 src={img}
@@ -95,7 +95,7 @@ const ProductPage = () => {
 
       {/* right sec */}
 
-      <div className="md:w-[50%] h-[100%] p-5 md:pt-28">
+      <div className="md:w-[50%] w-[95%] h-[100%] md:p-5 mt-3 md:mt-0 md:pt-28">
         <p className="text-2xl font-bold">{productDetails.name}</p>
 
         <div className="flex flex-col md:flex-row gap-4 my-3">
@@ -119,7 +119,9 @@ const ProductPage = () => {
               {productDetails.variants.map((varient, index) => (
                 <div key={index} className="border border-gray-100 p-3">
                   <h3>{varient.name}</h3>
-                  <p>{paiseToRupee(varient.price)}</p>
+                  <p className="text-red-900 text-2xl font-semibold">
+                    ₹ {paiseToRupee(varient.price)}
+                  </p>
                 </div>
               ))}
             </div>
