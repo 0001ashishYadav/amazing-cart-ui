@@ -71,3 +71,8 @@ apiClient.getCategoryProductsBySlug = (slug) =>
 
 apiClient.getAttributesByCategory = (id) =>
   apiClient(`/attributes/${id}`, "GET");
+
+// Cart APIs
+apiClient.fetchMyCart = () => apiClient("/carts/my", "GET");
+
+apiClient.addToCart = (payload) => apiClient("/carts", "POST", payload);
