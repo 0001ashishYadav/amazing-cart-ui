@@ -1,24 +1,43 @@
 "use client";
-
-import { apiClient, getProductDetails } from "@/utils/apiClient";
-import { Award, Star } from "lucide-react";
-import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { apiClient } from "../../../../utils/apiClient";
+import { paiseToRupee } from "../../../../utils/calculation";
 
-const ProductPage = () => {
+const ProductDetailsPage = () => {
+  const [variant, setVariant] = useState({});
   const [productDetails, setProductDetails] = useState({});
 
   const { slug } = useParams();
-  const fetchProductDeatils = async (slug) => {
+
+  const addToCart = async () => {
     try {
-      const data = await apiClient.getProductBySlug(slug);
+      const data = await apiClient.addToCart({
+        variant_id: variant.variant_id,
+      });
       console.log(data);
       if (data.error) {
         alert(data.message);
         return;
       }
-      // console.log(data);
+
+      alert(data.message);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchProductDeatils = async (slug) => {
+    try {
+      const data = await apiClient.getProductBySlug(slug);
+
+      console.log(data);
+      if (data.error) {
+        alert(data.message);
+        return;
+      }
       setProductDetails(data);
+      setVariant(data.variants[0]);
     } catch (error) {
       console.log(error);
     }
@@ -28,115 +47,55 @@ const ProductPage = () => {
     fetchProductDeatils(slug);
   }, [slug]);
 
-  const [bCurrentImg, setBcurrentImg] = useState(
-    "https://m.media-amazon.com/images/I/81sNxLVmxOL._SX679_.jpg"
-  );
-  const [proImg, setProImg] = useState([
-    {
-      proNo: "1",
-      img: "https://m.media-amazon.com/images/I/81sNxLVmxOL._SX679_.jpg",
-      isActive: true,
-    },
-    {
-      proNo: "2",
-      img: "https://m.media-amazon.com/images/I/91bdQ0IjRVL._SX679_.jpg",
-      isActive: false,
-    },
-    {
-      proNo: "3",
-      img: "https://m.media-amazon.com/images/I/81xOR1hyQvL._SX679_.jpg",
-      isActive: false,
-    },
-    {
-      proNo: "4",
-      img: "https://m.media-amazon.com/images/I/81yZAFl5YLL._SX679_.jpg",
-      isActive: false,
-    },
-    {
-      proNo: "5",
-      img: "https://m.media-amazon.com/images/I/81x2AIh7D9L._SX679_.jpg",
-      isActive: false,
-    },
-  ]);
-
-  function currentImg(id) {
-    setProImg((pre) =>
-      pre.map((ele) =>
-        ele.proNo == id
-          ? { ...ele, isActive: true }
-          : { ...ele, isActive: false }
-      )
-    );
-
-    proImg.map((ele) => {
-      if (ele.proNo === id) setBcurrentImg(ele.img);
-    });
-  }
-
   return (
-    <section className="md:h-[80vh] max-w-7xl flex items-center flex-col md:flex-row mx-auto md:my-8">
-      {/* left sec */}
-
-      <div className="h-[100%] md:w-[50%] md:p-5 flex flex-col justify-center">
-        {}
-        <img className="h-[80%]" src={bCurrentImg} alt="product img" />
-
-        <div className="flex justify-between items-center h-[20%] w-[95%] mx-auto">
-          {proImg.map((pro, ind) => (
-            <img
-              key={pro.proNo}
-              className={`md:h-[80px] h-[30px] md:w-[80px] w-[40px] ${
-                pro.isActive ? "border-2 border-red-700" : "border-none"
-              }`}
-              src={pro.img}
-              alt="product_img"
-              onClick={() => currentImg(pro.proNo)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* right sec */}
-
-      <div className="md:w-[50%] h-[100%] p-5 md:pt-28">
-        <p className="text-2xl font-bold">
-          Samsung 1 Ton 3 Star Digital Inverter Split AC
-        </p>
-
-        <div className="flex flex-col md:flex-row gap-4 my-3">
-          <div className="flex gap-3 ">
-            <Star />
-            <Star />
-            <Star />
-            <Star />
-            <Star />
+    <div className="grid grid-cols-2 gap-2">
+      {productDetails.image_urls ? (
+        <div>
+          <img
+            src={productDetails?.image_urls[0]}
+            className="h-96 w-full object-contain"
+          />
+          <div className="flex gap-2 w-full overflow-x-auto">
+            {productDetails?.image_urls.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                className="h-32 w-32 object-contain border border-gray-200 shadow"
+              />
+            ))}
           </div>
-          <span className="text-lg text-gray-400 font-light">
-            ( 150 reviews )
-          </span>
+          <div className="flex gap-2 mt-2 justify-center">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={addToCart}
+            >
+              Add to Cart
+            </button>
+            <button className="bg-green-500 text-white px-4 py-2 rounded ml-2">
+              Buy Now
+            </button>
+          </div>
         </div>
-
-        <p className="flex items-end gap-2">
-          <span className="text-red-700 text-3xl">-40%</span>
-          <span className="text-lg font-semibold">₹ 31,990</span>
-        </p>
-
-        <p className="flex gap-2 my-3">
-          <Award className="text-green-500" />
-          <span className="text-gray-400">2 Year Warranty</span>
-        </p>
-
-        <div className="flex flex-col gap-2 md:w-[40%]">
-          <button className="px-16 py-2 rounded-full font-semibold border-2 border-gray-800">
-            Add to Cart
-          </button>
-          <button className="px-16 py-2 rounded-full font-semibold border-2 border-gray-800">
-            Buy Now
-          </button>
-        </div>
+      ) : (
+        <div>No Image Available</div>
+      )}
+      <div>
+        <h1 className="font-medium text-3xl">{productDetails.name}</h1>
+        <p>{productDetails.description}</p>
+        {productDetails.variants && (
+          <div className="mt-5">
+            <h3 className="text-xl font-semibold">Varients</h3>
+            {productDetails.variants.map((varient, index) => (
+              <div key={index} className="border border-gray-100 shadow p-3">
+                <h3>{varient.name}</h3>
+                <p>{paiseToRupee(varient.price)}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 };
 
-export default ProductPage;
+export default ProductDetailsPage;
