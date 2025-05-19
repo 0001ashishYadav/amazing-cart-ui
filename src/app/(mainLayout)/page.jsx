@@ -23,7 +23,7 @@ export default function HomePage() {
         setLoading(false);
         return;
       }
-      console.log(data);
+
       setProducts(data);
       setLoading(false);
     } catch (error) {
@@ -44,7 +44,7 @@ export default function HomePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4">
         {products.map((product) => (
-          <ProductCard product={product} key={product.id} />
+          <ProductCard product={product} key={product.product_id} />
         ))}
       </div>
 
