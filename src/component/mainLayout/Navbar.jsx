@@ -3,32 +3,99 @@ import { useGlobalContext } from "@/context/GlobalContext";
 import Link from "next/link";
 import React from "react";
 
+import {
+  Popover,
+  PopoverBackdrop,
+  PopoverButton,
+  PopoverPanel,
+} from "@headlessui/react";
+import { deleteCookie } from "@/utils/cookies";
+
 const Navbar = () => {
-  const { isLogin, setIsLogin } = useGlobalContext();
+  const { isLogin, setIsLogin, categories, userProfile, cart } =
+    useGlobalContext();
+
+  console.log("userProfile", userProfile);
 
   const handleLogout = () => {
+    deleteCookie("access_token");
+    deleteCookie("refresh_token");
     setIsLogin(false);
+    window.location.reload();
   };
 
   return (
-    <header className="bg-gray-800 text-gray-50 sticky top-0 left-0 z-50 flex justify-between gap-2 h-16 items-center px-5">
+    <header className="bg-gray-800 text-gray-50 sticky top-0 left-0 z-20 flex justify-between gap-2 h-16 items-center px-5">
       <h3 className="font-semibold text-2xl">AmazingCart</h3>
       <nav className="flex items-center gap-4">
         <Link href="/">Home</Link>
-        <Link href="/shop">Shop</Link>
+        <Popover className="relative">
+          <PopoverButton className="cursor-pointer">Shop</PopoverButton>
+          <PopoverBackdrop
+            transition
+            className="fixed inset-0 bg-black/15 transition duration-100 ease-out data-closed:opacity-0"
+          />
+          <PopoverPanel
+            anchor="bottom"
+            transition
+            className="flex origin-top mt-5 z-20 p-4 flex-col divide-y divide-gray-200 bg-white transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+          >
+            {categories.map((cat) => (
+              <Link className="p-1" href={`/categories/${cat.slug}`}>
+                {cat.name}
+              </Link>
+            ))}
+          </PopoverPanel>
+        </Popover>
       </nav>
 
-      {!isLogin ? (
-        <div className="flex items-center gap-4">
-          <Link href="/login">Login</Link>
-          <Link href="/signup">Sighup</Link>
-        </div>
-      ) : (
-        <div className="flex gap-2 items-center">
-          <button>Account</button>
-          <button onClick={handleLogout}>Log out</button>
-        </div>
-      )}
+      <nav className="flex gap-5">
+        {!isLogin ? (
+          <>
+            <Link href={"/login"}>Login</Link>
+            <Link href={"/signup"}>Signup</Link>
+          </>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <Popover className="relative">
+              <PopoverButton>
+                <div className="h-10 w-10 rounded-full bg-gray-300 flex justify-center items-center text-2xl font-semibold text-gray-800 cursor-pointer">
+                  {userProfile?.full_name[0].toUpperCase()}
+                </div>
+              </PopoverButton>
+              <PopoverBackdrop
+                transition
+                className="fixed inset-0 bg-black/15 transition duration-100 ease-out data-closed:opacity-0"
+              />
+              <PopoverPanel
+                anchor="bottom"
+                transition
+                className="flex origin-top mt-2 z-50 p-4 flex-col divide-y divide-gray-200 bg-white transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+              >
+                <Link className="p-1" href={"/cart"}>
+                  Cart
+                  {cart?.length > 0 && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2">
+                      {cart?.length}
+                    </span>
+                  )}
+                </Link>
+                <Link className="p-1" href={"/orders"}>
+                  Orders
+                </Link>
+                <Link className="p-1" href={"/profile"}>
+                  Profile
+                </Link>
+                <Link className="p-1" href={"/address"}>
+                  Wish List
+                </Link>
+
+                <button onClick={handleLogout}>Log out</button>
+              </PopoverPanel>
+            </Popover>
+          </div>
+        )}
+      </nav>
     </header>
   );
 };
