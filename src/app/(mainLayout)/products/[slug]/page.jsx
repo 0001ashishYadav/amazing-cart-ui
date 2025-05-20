@@ -64,7 +64,7 @@ const ProductPage = () => {
       {productDetails.image_urls ? (
         <div className="h-[100%] md:w-[50%] md:p-5 flex flex-col justify-center">
           {loading ? (
-            <div className="h-[80%] md:rounded-4xl bg-gray-300 animate-pulse rounded mb-2"></div>
+            <div className="h-[80%] w-[80%] md:rounded-4xl bg-gray-300 animate-pulse rounded mb-2"></div>
           ) : (
             <img
               className="h-[80%] md:rounded-4xl"
