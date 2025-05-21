@@ -1,6 +1,7 @@
 "use client";
 
 import ProductCard from "@/component/card";
+import CardSlider from "@/component/cardSlider";
 import HeroSection from "@/component/home/HeroSection";
 import { useGlobalContext } from "@/context/GlobalContext";
 import { apiClient } from "@/utils/apiClient";
@@ -17,6 +18,7 @@ export default function HomePage() {
     setLoading(true);
     try {
       const data = await apiClient.getProducts();
+      console.log(data);
 
       if (data.error) {
         alert(data.message);
@@ -42,13 +44,22 @@ export default function HomePage() {
         <HeroSection />
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 px-5">
         {products.map((product) => (
-          <ProductCard product={product} key={product.product_id} />
+          <ProductCard
+            product={product}
+            key={product.product_id}
+            discount={product.discount}
+          />
         ))}
       </div>
 
-      <div>
+      {/* category section */}
+      <section>
+        <CardSlider arr={categories} />
+      </section>
+
+      {/* <div>
         <h3 className="text-2xl font-semibold">Categories</h3>
         <ul className="list-disc">
           {categories.map((category) => (
@@ -62,7 +73,7 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
 
       {loading && (
         <div className="flex items-center justify-center bg-white fixed inset-0 z-10 h-screen w-full">
