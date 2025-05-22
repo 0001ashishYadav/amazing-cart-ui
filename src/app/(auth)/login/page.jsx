@@ -6,12 +6,14 @@ import { setCookie } from "@/utils/cookies";
 import { validateEmail, validatePassword } from "@/utils/validateFormFields";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 
 function LoginPage() {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  console.log(searchParams.get("ref"));
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPassword, setIsPassword] = useState(true);
@@ -98,7 +100,11 @@ function LoginPage() {
       setValidationError({ email: "", password: "" });
       setError("");
       setIsLoading(false);
-      router.push("/", { replace: true });
+      if (searchParams.get("ref")) {
+        router.push(searchParams.get("ref"), { replace: true });
+      } else {
+        router.push("/", { replace: true });
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
