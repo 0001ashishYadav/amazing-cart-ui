@@ -45,6 +45,11 @@ export default function HomePage() {
         <HeroSection />
       </section>
 
+      {/* category section */}
+      <section>
+        <CardSlider arr={categories} />
+      </section>
+
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 px-5">
         {products.map((product) => (
           <ProductCard
@@ -54,11 +59,6 @@ export default function HomePage() {
           />
         ))}
       </div>
-
-      {/* category section */}
-      <section>
-        <CardSlider arr={categories} />
-      </section>
 
       {/* <div>
         <h3 className="text-2xl font-semibold">Categories</h3>

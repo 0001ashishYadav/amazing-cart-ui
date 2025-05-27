@@ -1,5 +1,6 @@
 "use client";
 
+import Loader from "@/component/loader";
 import { useGlobalContext } from "@/context/GlobalContext";
 import { apiClient } from "@/utils/apiClient";
 import { setCookie } from "@/utils/cookies";
@@ -7,7 +8,7 @@ import { validateEmail, validatePassword } from "@/utils/validateFormFields";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 function LoginPage() {
   const router = useRouter();
@@ -28,6 +29,8 @@ function LoginPage() {
   });
 
   const [error, setError] = useState("");
+
+  const [sError, setSerror] = useState("");
 
   const enableDisableBtn = () => {
     if (!email.length || !password.length) {
@@ -113,116 +116,128 @@ function LoginPage() {
     }
   };
 
+  useEffect(() => {
+    setSerror(searchParams.get("error"));
+  }, [searchParams]);
+
+  if (sError) return <div>{error && <p>{error}</p>}</div>;
+
   return (
-    <div className="h-screen flex justify-center items-center pt-16">
-      {/* <!-- component --> */}
-      <div className="bg-gray-100 flex justify-center items-center max-w-7xl mx-auto h-[80vh] rounded-3xl overflow-hidden">
-        {/* <!-- Left: Image --> */}
-        <div className="w-1/2 h-[100%] hidden lg:block">
-          <img
-            src="https://img.freepik.com/free-photo/young-girl-dressed-up-black-t-shirt-leather-trousers-holding-blank-craft-shopping-bags-with-handles-isolated-white_231208-4952.jpg?semt=ais_hybrid&w=740"
-            alt="Placeholder Image"
-            className="object-cover w-full h-[100%]"
-          />
-        </div>
-        {/* <!-- Right: Login Form --> */}
-        <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
-          <h1 className="text-2xl font-semibold mb-4">Login</h1>
+    <Suspense fallback={<Loader />}>
+      <div className="h-screen flex justify-center items-center pt-16">
+        {/* <!-- component --> */}
+        <div className="bg-gray-100 flex justify-center items-center max-w-7xl mx-auto h-[80vh] rounded-3xl overflow-hidden">
+          {/* <!-- Left: Image --> */}
+          <div className="w-1/2 h-[100%] hidden lg:block">
+            <img
+              src="https://img.freepik.com/free-photo/young-girl-dressed-up-black-t-shirt-leather-trousers-holding-blank-craft-shopping-bags-with-handles-isolated-white_231208-4952.jpg?semt=ais_hybrid&w=740"
+              alt="Placeholder Image"
+              className="object-cover w-full h-[100%]"
+            />
+          </div>
+          {/* <!-- Right: Login Form --> */}
+          <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
+            <h1 className="text-2xl font-semibold mb-4">Login</h1>
 
-          {error && (
-            <p className="text-sm text-red-500 text-center mt-1">{error}</p>
-          )}
-
-          <form action="#" method="POST" onSubmit={handleLogin}>
-            {/* <!-- Username Input --> */}
-            <div className="mb-4">
-              <label className="block text-gray-600">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={email}
-                required
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-              />
-
-              {validationError.email && (
-                <p className="text-sm text-red-500">{validationError.email}</p>
-              )}
-            </div>
-            {/* <!-- Password Input --> */}
-            <label className="block text-gray-600">Password</label>
-            <div className="mb-4 relative">
-              <input
-                type={isPassword ? "password" : "text"}
-                id="password"
-                value={password}
-                name="password"
-                required
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-              />
-
-              {isPassword ? (
-                <Eye
-                  className="absolute right-2 top-[50%] -translate-y-[50%] hover:cursor-pointer"
-                  onClick={() => setIsPassword(!isPassword)}
-                />
-              ) : (
-                <EyeOff
-                  className="absolute right-2 top-[50%] -translate-y-[50%] hover:cursor-pointer"
-                  onClick={() => setIsPassword(!isPassword)}
-                />
-              )}
-            </div>
-            {validationError.password && (
-              <p className="text-sm text-red-500">{validationError.password}</p>
+            {error && (
+              <p className="text-sm text-red-500 text-center mt-1">{error}</p>
             )}
-            {/* <!-- Remember Me Checkbox --> */}
-            <div className="mb-4 flex items-center">
-              <input
-                type="checkbox"
-                id="remember"
-                name="remember"
-                className="text-blue-500"
-              />
-              <label className="text-gray-600 ml-2">Remember Me</label>
-            </div>
-            {/* <!-- Forgot Password Link --> */}
-            <div className="mb-6 text-black">
-              <a href="/forgot_password" className="hover:underline">
-                Forgot Password?
-              </a>
-            </div>
-            {/* <!-- Login Button --> */}
 
-            <button
-              type="submit"
-              disabled={enableDisableBtn() ? true : false}
-              className={` text-white font-semibold rounded-md py-2 px-4 w-full flex justify-center items-center ${
-                enableDisableBtn() ? "bg-gray-300" : "bg-black"
-              }`}
-            >
-              {isLoading ? (
-                <svg
-                  className="animate-spin h-8 w-8 border-t-transparent border-2 rounded-full"
-                  viewBox="0 0 24 24"
-                ></svg>
-              ) : (
-                "Login"
+            <form action="#" method="POST" onSubmit={handleLogin}>
+              {/* <!-- Username Input --> */}
+              <div className="mb-4">
+                <label className="block text-gray-600">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={email}
+                  required
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                />
+
+                {validationError.email && (
+                  <p className="text-sm text-red-500">
+                    {validationError.email}
+                  </p>
+                )}
+              </div>
+              {/* <!-- Password Input --> */}
+              <label className="block text-gray-600">Password</label>
+              <div className="mb-4 relative">
+                <input
+                  type={isPassword ? "password" : "text"}
+                  id="password"
+                  value={password}
+                  name="password"
+                  required
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                />
+
+                {isPassword ? (
+                  <Eye
+                    className="absolute right-2 top-[50%] -translate-y-[50%] hover:cursor-pointer"
+                    onClick={() => setIsPassword(!isPassword)}
+                  />
+                ) : (
+                  <EyeOff
+                    className="absolute right-2 top-[50%] -translate-y-[50%] hover:cursor-pointer"
+                    onClick={() => setIsPassword(!isPassword)}
+                  />
+                )}
+              </div>
+              {validationError.password && (
+                <p className="text-sm text-red-500">
+                  {validationError.password}
+                </p>
               )}
-            </button>
-          </form>
-          {/* <!-- Sign up  Link --> */}
-          <div className="mt-6 text-black text-center">
-            <Link href="/signup" className="hover:underline">
-              Sign up Here
-            </Link>
+              {/* <!-- Remember Me Checkbox --> */}
+              <div className="mb-4 flex items-center">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  name="remember"
+                  className="text-blue-500"
+                />
+                <label className="text-gray-600 ml-2">Remember Me</label>
+              </div>
+              {/* <!-- Forgot Password Link --> */}
+              <div className="mb-6 text-black">
+                <a href="/forgot_password" className="hover:underline">
+                  Forgot Password?
+                </a>
+              </div>
+              {/* <!-- Login Button --> */}
+
+              <button
+                type="submit"
+                disabled={enableDisableBtn() ? true : false}
+                className={` text-white font-semibold rounded-md py-2 px-4 w-full flex justify-center items-center ${
+                  enableDisableBtn() ? "bg-gray-300" : "bg-black"
+                }`}
+              >
+                {isLoading ? (
+                  <svg
+                    className="animate-spin h-8 w-8 border-t-transparent border-2 rounded-full"
+                    viewBox="0 0 24 24"
+                  ></svg>
+                ) : (
+                  "Login"
+                )}
+              </button>
+            </form>
+            {/* <!-- Sign up  Link --> */}
+            <div className="mt-6 text-black text-center">
+              <Link href="/signup" className="hover:underline">
+                Sign up Here
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   );
 }
 
