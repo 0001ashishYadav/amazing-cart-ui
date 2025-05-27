@@ -37,7 +37,7 @@ const CategoryProductsPage = () => {
           {products.map((product) => (
             <div
               className="bg-white rounded-xl shadow overflow-hidden"
-              key={product.id}
+              key={product.product_id}
             >
               {/* Product Image */}
               <div className="relative">

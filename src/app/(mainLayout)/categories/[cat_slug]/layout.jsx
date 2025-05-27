@@ -118,11 +118,21 @@ const catLayout = ({ children }) => {
           ))
         ) : (
           <ul className="flex flex-col gap-2">
-            {attributes.map((attr) => (
-              <li key={attr.id}>
+            {attributes.map((attr, ind) => (
+              <li key={ind}>
                 <p className={`text-lg text-blue-500 hover:underline`}>
                   {attr.name}
                 </p>
+
+                <p className="text-green-800">{attr.name}</p>
+                {attr.values.map((value, ind) => (
+                  <div key={ind} className="flex items-center gap-2 mt-1">
+                    <input id={value} type="checkbox" />
+                    <label htmlFor={value} className="cursor-pointer">
+                      {value}
+                    </label>
+                  </div>
+                ))}
               </li>
             ))}
           </ul>
